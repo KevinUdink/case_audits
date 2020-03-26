@@ -31,6 +31,8 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'manager_app',
+
     'django.contrib.admin',
     'django.contrib.auth',            # authentication framework and its default models
     'django.contrib.contenttypes',    # content type system (allows permissions to be associated with models)
@@ -128,3 +130,11 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# Your project will probably also have static assets that aren’t tied to a particular app. 
+#   In addition to using a static/ directory inside your apps, you can define a list of directories
+#   (STATICFILES_DIRS) in your settings file where Django will also look for static files.
+# https://docs.djangoproject.com/en/2.2/howto/static-files/
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static"),
+]
