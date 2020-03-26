@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script> -->
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+  <style>
+    .nav-top-padding {
+      padding-top: 50px;
+      padding-bottom: 50px;
+    }
+  </style>
+  {% block head %}
+  <title>Application Login</title>
+  {% endblock %}
+</head>
+<body>
+  <br>
+  <nav class="navbar navbar-expand-sm bg-light fixed-top">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="#">WebSiteName</a>
+    </div>
+    <ul class="nav justify-content-end">
+      <li class="nav-item active"><a class="nav-link" href="#">Home</a></li>
+      <li class="nav-item"><a class="nav-link" href="#">Page 1</a></li>
+      <li class="nav-item"><a class="nav-link" href="#">Page 2</a></li>
+      <li class="nav-item"><a class="nav-link disabled" href="#">Page 3</a></li>
+          <!-- Dropdown -->
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
+          Dropdown link
+        </a>
+        <div class="dropdown-menu">
+          <a class="dropdown-item" href="#">Link 1</a>
+          <a class="dropdown-item" href="#">Link 2</a>
+          <a class="dropdown-item" href="#">Link 3</a>
+        </div>
+      </li>
+    </ul>
+  </nav>
+
+  <div class="container my-2 px-3 shadow nav-top-padding">
+    <div class="row my-3">
+      <div class="col">
+        {% block content %}
+        Body 
+        {% endblock %}
+      </div>
+    </div>
+  </div>
+  
+  <footer>
+    <nav class="navbar navbar-expand-sm bg-dark navbar-dark fixed-bottom">
+      <a class="navbar-brand" href="#">Logo</a>
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link" href="javascript:void(0)">Link</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="javascript:void(0)">Link</a>
+        </li>
+      </ul>
+    </nav>
+  </footer>
+</body>
+</html>

@@ -1,4 +1,4 @@
-"""audit_project URL Configuration
+"""auth_login_project URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/2.2/topics/http/urls/
@@ -14,8 +14,24 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
+from . import views
 
 urlpatterns = [
+    path('', views.login_successful),
+    # path('', include('auth_login_app.urls')),
     path('admin/', admin.site.urls),
+]
+
+# Add Django site authentication urls for:
+# accounts/ login/ [name='login']
+# accounts/ logout/ [name='logout']
+# accounts/ password_change/ [name='password_change']
+# accounts/ password_change/done/ [name='password_change_done']
+# accounts/ password_reset/ [name='password_reset']
+# accounts/ password_reset/done/ [name='password_reset_done']
+# accounts/ reset/<uidb64>/<token>/ [name='password_reset_confirm']
+# accounts/ reset/done/ [name='password_reset_complete']
+urlpatterns += [
+    path('accounts/', include('django.contrib.auth.urls')),
 ]
