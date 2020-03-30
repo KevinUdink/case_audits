@@ -1,0 +1,103 @@
+{% extends "_audit_base.html" %}
+
+{% block head %}
+<title>Attorney Details</title>
+{% endblock %}
+
+{% block content %}
+  <div class="row mb-3">
+    <div class="col">
+      {% if is_add_attorney %}
+        <h2>New Attorney</h2>
+      {% else %}
+        <h2>{{attorney.first_name}} {{attorney.last_name}}</h2>
+      {% endif %}
+    </div>
+    <div class="dropdown">
+      <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+        Dropdown button
+      </button>
+      <div class="dropdown-menu">
+        <a class="dropdown-item" href="#">Link 1</a>
+        <a class="dropdown-item" href="#">Link 2</a>
+        <a class="dropdown-item" href="#">Link 3</a>
+      </div>
+    </div>
+    <div class="col-sm-4">
+      <a href="/attorney/">Return to Attorney List</a>
+    </div>
+  </div>
+  <!-- Display the details for a specific attorney in text boxes to update them or add them if this is to create a attorney -->
+  <div class="row">
+    <div class="col">
+      {% if messages %}
+      <ul class="messages">
+        {% for message in messages %}
+          <li {% if message.tags %} class="{{message.tags}}" {% endif %}>{{message}}</li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+      <div class="col-sm-12 col-lg-10">
+        {% if is_add_attorney %}
+        <form method="POST" action="/attorney/create/" class="w-60">
+        {% else %}
+        <form method="POST" action="/attorney/update/{{attorney.id}}" class="w-60">
+        {% endif %}
+          {% csrf_token %}
+          <div class="form-group row">
+            <label for="first_name" class="col-sm-3 col-form-label text-sm-right">First Name</label>
+            <div class="col-sm-8">
+              <input type="text" id="first_name" name="first_name" class="form-control" value="{{attorney.first_name}}" />
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="last_name" class="col-sm-3 col-form-label text-sm-right">Last Name</label>
+            <div class="col-sm-8">
+              <input type="text" id="last_name" name="last_name" class="form-control" value="{{attorney.last_name}}" />
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="manager" class="col-sm-3 col-form-label text-sm-right">Manager</label>
+            <div class="col-sm-8">
+              <select id="manager" name="manager" class="col-sm-8 pl-1 browser-default" size="4">
+                <!-- <option value="0">Select Manager</option> -->
+                {% for manager in managers %}
+                  <option value="{{manager.id}}" {% if manager.id == attorney.manager_id %} checked {% endif %}} >{{manager.first_name}} {{manager.last_name}}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="audit_type" class="col-sm-3 col-form-label text-sm-right">Default Audit Type</label>
+            <div class="col-sm-8">
+              <select id="audit_type" name="audit_type" class="col-sm-8 pl-1 browser-default" size="4">
+                <!-- <option value="0">Select Audit Type</option> -->
+                {% for audit_type in audit_types %}
+                  <option value="{{audit_type.id}}">{{audit_type.name}}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+          <div class="form-group row">
+            <div class="col-sm-3"></div>
+            <div class="col-sm-1">
+              <!-- This looks funny when we get to extra small device sizes - need to work on this again later -->
+              <input type="checkbox" id="is_active" name="is_active" value="is_active"
+                {% if attorney.active %} checked {% endif %} />
+            </div>
+            <div class="col-sm-3">
+              <label for="is_active" class="col col-form-label text-left">Active</label>
+            </div>
+          </div>
+          <div class="form-group">
+            {% if is_add_attorney %}
+              <button type="submit" class="btn btn-success float-right">Add</button>
+            {% else %}
+              <button type="submit" class="btn btn-success float-right">Update</button>
+            {% endif %}
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+{% endblock %}

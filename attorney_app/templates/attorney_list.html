@@ -1,32 +1,32 @@
 {% extends "_audit_base.html" %}
 
 {% block head %}
-<title>Audit Types</title>
+<title>Attorney List</title>
 {% endblock %}
 
 {% block content %}
   <div class="row mb-3">
     <div class="col">
-      <h2>Audit Types</h2>
+      <h2>Attorney List</h2>
     </div>
     <div class="col-sm-3">
-      <button class="btn btn-primary mx-3" onclick="window.location.href='/audit/add';">Add Audit</button>
+      <button class="btn btn-primary mx-3" onclick="window.location.href='/attorney/add';">Add Attorney</button>
     </div>
   </div>
 
   <!-- Display a list of all managers with links to edit each one -->
   <table class="table table-bordered table-hover shadow p-5">
     <thead>
-      <th>Audit Name</th>
-      <th>Last Updated</th>
+      <th>Attorney Name</th>
+      <th>Views</th>
     </thead>
     <tbody>
-      {% for audit in audits %}
+      {% for attorney in attorneys %}
       <tr>
         <td>
-          <a href="/audit/details/{{ audit.id }}">{{ audit.name }}</a>
+          <a href="/attorney/details/{{ attorney.id }}">{{ attorney.name }}</a>
         </td>
-        <td>{{ audit.updated_at }}</td>
+        <td>{{ attorney.updated_at }}</td>
       </tr>
       {% endfor %}
     </tbody>

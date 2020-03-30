@@ -31,7 +31,11 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'audit_app',
+    'attorney_app',
     'manager_app',
+
+    # 'crispy_forms',                   # model / form validation simplified - pip installed package
 
     'django.contrib.admin',
     'django.contrib.auth',            # authentication framework and its default models
@@ -138,3 +142,8 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
 ]
+
+# Adding support to use the django-crispy-forms to simplify form
+#   validation and model usages
+# https://django-crispy-forms.readthedocs.io/en/latest/
+# CRISPY_TEMPLATE_PACK = 'bootstrap4'

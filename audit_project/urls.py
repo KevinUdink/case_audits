@@ -15,12 +15,15 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from . import views
+# from . import views  # this will include a page to select which application you want to use
 
 urlpatterns = [
-    path('', views.login_successful),
-    # path('', include('manager_app.urls')),
-    # path('', include('auth_login_app.urls')),
+    # We need to create a path to select the correct application
+    #   I intend this to include several useful applications for the City of Boise
+    path('', include('manager_app.urls')),
+    path('manager/', include('manager_app.urls')),
+    path('attorney/', include('attorney_app.urls')),
+    path('audit/', include('audit_app.urls')),
     path('admin/', admin.site.urls),
 ]
 

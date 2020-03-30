@@ -1,0 +1,100 @@
+{% extends "_audit_base.html" %}
+
+{% block head %}
+<title>Manager List</title>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+  <form id="manager-form">
+    <div class="row">
+      {% csrf_token %}
+      {% for field in form %}
+      <div class="form-group col-4">
+        <label class="col-12">{{ field.label }}</label>
+        {{ field }}
+      </div>
+      {% endfor %}
+    </div>
+    <div class="row justify-content-center">
+        <input type="submit" class="btn btn-primary" value="Create Manager" />
+    </div>
+  <form>
+</div>
+<hr />
+
+<div class="container-fluid">
+  <table class="table table-striped table-sm" id="managers_table">
+    <thead>
+      <tr>
+        <th>Manager Name</th>
+        <th>Title</th>
+        <!-- <th>Active</th> -->
+      </tr>
+    </thead>
+    <tbody>
+      {% for manager in managers %}
+      <tr>
+        <td><a href="/manager/details/{{manager.id}}">{{manager.first_name}} {{manager.last_name}}</a></td>
+        <td>{{manager.title}}</td>
+        <!-- <td>{{manager.created_at | date:"Y-m-d"}}</td> -->
+        <!-- <td>{{manager.is_active}}</td> -->
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+</div>
+{% endblock content %}
+
+
+{% block javascript %}
+<script>
+  // On submiting the form, send the POST (ajax) request to the server 
+  // after successfull submission, display the object
+  $("#manager-form").submit(function (e) {
+    // preventing page reload and all other default actions
+    e.preventDefault();
+
+    // serialize the data for sending the form data to the server
+    var serializedData = $(this).serialize();
+
+    // make the POST ajax call - explicitly sending a POST request to the "named" URL
+    $.ajax({
+      type: 'POST',
+      url: "{% url 'post_manager' %}",
+      data: serializedData,
+      success: function (response) {
+        // after successfully the creating object, we need to do multiple things
+        // 1. clear the form of the previously submitted data
+        $("#manager-form").trigger('reset');
+        
+        // 2. set the focus to first name input 
+        $("#first_name").focus();
+
+        // display the new manager in the table
+        var instance = JSON.parse(response["instance"]);
+
+        // use the first instance returned (it should only be one anyways)
+        var fields = instance[0]["fields"];
+        var id = instance[0]["pk"]
+
+        // add this manager to the top of the list of managers
+        //    These are written so that if the value is empty, we add an empty string to the TD
+        $("#managers_table tbody").prepend(
+          `<tr>
+          <td><a href="/manager/details/${id}">${fields["first_name"]||""} ${fields["last_name"]||""}</a></td>
+          <td>${fields["title"]||""}</td>
+          </tr>`
+        )},
+          // <td>${fields["is_active"]||""}</td>
+
+      error: function (response) {
+        // alert the error if any occured
+        alert(response["responseJSON"]["error"]);
+      }
+    })
+  })
+</script>
+
+{% endblock javascript %}

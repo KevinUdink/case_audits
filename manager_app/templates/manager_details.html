@@ -1,19 +1,104 @@
-{% extends "_manager_base.html" %}
+{% extends "_audit_base.html" %}
 
 {% block head %}
 <title>Manager Details</title>
 {% endblock %}
 
 {% block content %}
-  <div class="container p-3 shadow">
-    <div class="row my-3">
-      <div class="col">
-        <h1>Manager Details</h1>
+  <div class="row mb-3">
+    <div class="col">
+      <h3>{{manager.first_name}} {{manager.last_name}}</h3>
+    </div>
+    <div class="col-sm-4">
+      <a href="/manager/">Return to Manager List</a>
+    </div>
+  </div>
+  <!-- Display the details for a specific manager in text boxes to update them or add them if this is to create a manager -->
+  <div class="row">
+    <div class="col">
+      {% if messages %}
+      <ul class="messages">
+        {% for message in messages %}
+          <li {% if message.tags %} class="{{message.tags}}" {% endif %}>{{message}}</li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+      <div class="col-sm-12 col-lg-10">
+        <form method="POST" action="/manager/update/{{manager.id}}" class="w-60">
+          {% csrf_token %}
+          <div class="form-group row">
+            <label for="first_name" class="col-sm-3 col-form-label text-sm-right">First Name</label>
+            <div class="col-sm-8">
+              <input type="text" id="first_name" name="first_name" class="form-control" value="{{manager.first_name}}" />
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="last_name" class="col-sm-3 col-form-label text-sm-right">Last Name</label>
+            <div class="col-sm-8">
+              <input type="text" id="last_name" name="last_name" class="form-control" value="{{manager.last_name}}" />
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="title" class="col-sm-3 col-form-label text-sm-right">Title</label>
+            <div class="col-sm-8">
+              <input type="text" id="title" name="title" class="form-control" value="{{manager.title}}" />
+            </div>
+          </div>
+          <!-- <div class="form-group row">
+            <label for="password" class="col-sm-3 col-form-label text-sm-right">Password</label>
+            <div class="col-sm-8">
+              <input type="password" id="password" name="password" class="form-control" />
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="confirm_pw" class="col-sm-3 col-form-label text-sm-right">Confirm Password</label>
+            <div class="col-sm-8">
+              <input type="password" id="confirm_pw" name="confirm_pw" class="form-control" />
+            </div>
+          </div> -->
+          <div class="form-group row">
+            <div class="col-sm-3"></div>
+            <div class="col-sm-1">
+              <!-- This looks funny when we get to extra small device sizes - need to work on this again later -->
+              <input type="checkbox" id="isActive" name="isActive" class="form-control" value="isActive"
+                {% if manager.is_active %} checked {% endif %} />
+            </div>
+            <div class="col-sm-3">
+              <label for="isActive" class="col col-form-label text-left">Active</label>
+            </div>
+          </div>
+          <div class="form-group">
+            <button type="submit" class="btn btn-success float-right">Update</button>
+          </div>
+        </form>
       </div>
     </div>
-    <div class="row my-3">
-      <div class="col">
-        <a href="/accounts/logout/">Would you like to logout?</a>
+  </div>
+  <div class="row my-4">
+    <div class="col">
+      <h4>Attorneys assigned to Manager</h4>
+      <div class="container-fluid">
+        <table class="table table-striped table-sm" id="my_managers">
+          <thead>
+            <tr>
+              <th>Attorney Name</th>
+              <th>Views</th>
+              <!-- <th>Active</th> -->
+            </tr>
+          </thead>
+          <tbody>
+            {% for attorney in attorneys %}
+            <tr>
+              <td><a href="/attorney/details/{{attorney.id}}">{{attorney.first_name}} {{attorney.last_name}}</a></td>
+              <td>
+                <a href="/attorney/{{attorney.id}}/summary">Summary</a>
+                <a href="/attorney/{{attorney.id}}/audits">Audits</a>
+              </td>
+              <!-- <td>{{attorney.is_active}}</td> -->
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
       </div>
     </div>
   </div>

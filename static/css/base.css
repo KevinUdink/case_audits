@@ -28,6 +28,7 @@ body {
   margin-left: 0;
 }
 
+/* minimize the sidebar menu to give space for content if the screen is too small */
 @media (min-width: 768px) {
   #sidebar-wrapper {
     margin-left: 0;
