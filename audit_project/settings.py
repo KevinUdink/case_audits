@@ -33,6 +33,7 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'audit_app',
     'attorney_app',
+    'case_audit_app',
     'manager_app',
 
     # 'crispy_forms',                   # model / form validation simplified - pip installed package

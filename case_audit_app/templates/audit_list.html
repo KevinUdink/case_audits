@@ -1,0 +1,34 @@
+{% extends "_audit_base.html" %}
+
+{% block head %}
+<title>Audit Types</title>
+{% endblock %}
+
+{% block content %}
+  <div class="row mb-3">
+    <div class="col">
+      <h2>Audit Types</h2>
+    </div>
+    <div class="col-sm-3">
+      <button class="btn btn-primary mx-3" onclick="window.location.href='/audit/add';">Add Audit</button>
+    </div>
+  </div>
+
+  <!-- Display a list of all managers with links to edit each one -->
+  <table class="table table-bordered table-hover shadow p-5">
+    <thead>
+      <th>Audit Name</th>
+      <th>Last Updated</th>
+    </thead>
+    <tbody>
+      {% for audit in audits %}
+      <tr>
+        <td>
+          <a href="/audit/details/{{ audit.id }}">{{ audit.name }}</a>
+        </td>
+        <td>{{ audit.updated_at }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

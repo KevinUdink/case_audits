@@ -1,5 +1,6 @@
 from django.db import models
 from manager_app.models import Manager
+from audit_app.models import AuditType
 
 # Create your models here.
 class Attorney(models.Model):
@@ -7,8 +8,8 @@ class Attorney(models.Model):
     last_name = models.CharField(max_length=30)
     is_active = models.BooleanField(default=True)
     manager = models.ForeignKey(Manager, on_delete=models.CASCADE, related_name="attorneys")
-    # need to still add the foreign key for default audit type
     # audit_type = models.ForeignKey(AuditType, on_delete=models.CASCADE, related_name="attorneys")
+    # case_audits is a list of audits done using this audit type - from the CaseAudit class
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)
 
