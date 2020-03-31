@@ -8,6 +8,12 @@ def view_list(request):
 def details(request, attorney_id):
     print("in attorney details")
     # Get the attorney that matches this id
+
+
+    # Using a query set to set the select widget in a form
+    # series = ModelChoiceField(queryset=Series.objects.all())
+
+
     attorney = {
         "id": 6,
         "first_name": "Test",

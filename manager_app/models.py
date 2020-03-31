@@ -10,3 +10,10 @@ class Manager(models.Model):
     modified_at = models.DateTimeField(auto_now=True)
     # attorneys = list created by the foreign key in attorneys
 
+    # this is used for the console and debugging purposes in the "shell"
+    def __repr__(self):
+        return f"Manager Name: {self.first_name} {self.last_name}"
+
+    # This will be used to display information when editing and creating attorneys
+    def __str__(self):
+        return f"{self.first_name} {self.last_name}"

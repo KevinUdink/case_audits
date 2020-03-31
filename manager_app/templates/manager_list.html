@@ -17,7 +17,7 @@
       {% endfor %}
     </div>
     <div class="row justify-content-center">
-        <input type="submit" class="btn btn-primary" value="Create Manager" />
+      <input type="submit" class="btn btn-primary" value="Create Manager" />
     </div>
   <form>
 </div>
@@ -29,7 +29,8 @@
       <tr>
         <th>Manager Name</th>
         <th>Title</th>
-        <!-- <th>Active</th> -->
+        <!-- <th>Date Created</th> -->
+        <th>Active</th>
       </tr>
     </thead>
     <tbody>
@@ -38,7 +39,7 @@
         <td><a href="/manager/details/{{manager.id}}">{{manager.first_name}} {{manager.last_name}}</a></td>
         <td>{{manager.title}}</td>
         <!-- <td>{{manager.created_at | date:"Y-m-d"}}</td> -->
-        <!-- <td>{{manager.is_active}}</td> -->
+        <td>{{manager.is_active}}</td>
       </tr>
       {% endfor %}
     </tbody>
@@ -85,9 +86,10 @@
           `<tr>
           <td><a href="/manager/details/${id}">${fields["first_name"]||""} ${fields["last_name"]||""}</a></td>
           <td>${fields["title"]||""}</td>
+          <td>${fields["is_active"]||""}</td>
           </tr>`
         )},
-          // <td>${fields["is_active"]||""}</td>
+        // <td>{{manager.created_at | date:"Y-m-d"}}</td>
 
       error: function (response) {
         // alert the error if any occured
