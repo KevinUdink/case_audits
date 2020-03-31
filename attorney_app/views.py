@@ -1,98 +1,91 @@
 from django.shortcuts import render, redirect
+from .forms import AttorneyForm, AttorneyDetailForm
+from .models import Attorney
 
 # Create your views here.
 def view_list(request):
     print("in attorney view_list")
-    return render(request, "attorney_list.html")
+    attorneys = Attorney.objects.all()
+    context = {
+        "attorneys": attorneys,
+    }
+    return render(request, "attorney_list.html", context)
 
 def details(request, attorney_id):
-    print("in attorney details")
+    print(f"in attorney details: {attorney_id}")
     # Get the attorney that matches this id
+    attorney = Attorney.objects.get(id = attorney_id)
+    # print(f"\tattorney details: {attorney}")
+    form = AttorneyDetailForm(instance=attorney)
 
-
-    # Using a query set to set the select widget in a form
-    # series = ModelChoiceField(queryset=Series.objects.all())
-
-
-    attorney = {
-        "id": 6,
-        "first_name": "Test",
-        "last_name": "attorney",
-        "manager_id": 3,
-        "default_audit_type_id": 2,
-        "active": False,
-    }
-    # Get the list of managers
-    managers = [
-        { "id": "1", "first_name": "Sally", "last_name": "Manager"},
-        { "id": "2", "first_name": "Billy", "last_name": "Manager"},
-        { "id": "3", "first_name": "Bob", "last_name": "Manager"},
-        { "id": "4", "first_name": "Denyce", "last_name": "Manager"},
-    ]
-    # Get the list of default audit types
-    audit_types = [
-        { "id": "1", "name": "PTC" },
-        { "id": "2", "name": "DV" },
-        { "id": "3", "name": "DUI" },
-    ]
     context = {
         "is_add_attorney": False,
         "attorney": attorney,
-        "managers": managers,
-        "audit_types": audit_types,
+        "form": form,
     }
     return render(request, "attorney_details.html", context)
 
 def add(request):
     print("in attorney add")
-    # using blank values to simplify the HTML page we will render
-    attorney = {
-        "id": 5,
-        "first_name": "",
-        "last_name": "",
-        "manager_id": 0,
-        "default_audit_type_id": 0,
-        "active": True,
-    }
-    # Get the list of managers
-    managers = [
-        { "id": "1", "first_name": "Sally", "last_name": "Manager"},
-        { "id": "2", "first_name": "Billy", "last_name": "Manager"},
-        { "id": "3", "first_name": "Bob", "last_name": "Manager"},
-        { "id": "4", "first_name": "Denyce", "last_name": "Manager"},
-    ]
-    # Get the list of default audit types
-    audit_types = [
-        { "id": "1", "name": "PTC" },
-        { "id": "2", "name": "DV" },
-        { "id": "3", "name": "DUI" },
-    ]
+    form = AttorneyForm()
+
     context = {
         "is_add_attorney": True,
-        "attorney": attorney,
-        "managers": managers,
-        "audit_types": audit_types,
+        "form": form
     }
     return render(request, "attorney_details.html", context)
 
 def create(request):
     print("in attorney create")
-    print("\tFirst name:", request.POST['first_name'])
-    print("\tLast name:", request.POST['last_name'])
-    print("\tManager ID:", request.POST['manager'])
-    print("\tAudit Type ID:", request.POST['audit_type'])
-    if "is_active" in request.POST:
-        print("\tActive:", request.POST['is_active'])
-    attorney_id = 9
-    return redirect(f"/attorney/details/{attorney_id}")
+    if request.method == "POST":
+        # get the form data and assign it as a form object
+        form = AttorneyForm(request.POST)
 
+        # now use the built in form validation to verify our data passed in with the POST
+        if form.is_valid():
+            print("form is valid - creating attorney")
+            # we can now process the data that came in the POST dictionary...but we access the "clean" data
+            #   using the form.cleaned_data attribute / property
+            attorney_exists = Attorney.objects.filter(first_name = form.cleaned_data['first_name'], last_name = form.cleaned_data['last_name'])
+            if len(attorney_exists) > 0:
+                print(f"That attorney already exists - attorney id: {attorney_exists[0].id}")
+                # redirect to the attorney that already exists
+                return redirect(f"/attorney/details/{attorney_exists[0].id}")
+
+            # save this in the database and assign the returned instance of the manager object to a variable
+            instance = form.save()
+            print(f"instance id just created: {instance.id}")
+            return redirect(f"/attorney/details/{instance.id}")
+        else:
+            # form wasn't valid, let them try again
+            print("Form is invalid - Try again!")
+            # send the form back to show the errors as well as repopulate with the data they entered
+            return render(request, "/attorney/add", {"form": form})
+
+    # Since this is not a post request, redirect them to the attorney list
+    return redirect("/attorney/")
+    
 # update the attorney object and save to DB
 def update(request, attorney_id):
     print("in attorney update")
-    print("\tFirst name:", request.POST['first_name'])
-    print("\tLast name:", request.POST['last_name'])
-    print("\tManager ID:", request.POST['manager'])
-    print("\tAudit Type ID:", request.POST['audit_type'])
-    if "is_active" in request.POST:
-        print("\tActive:", request.POST['is_active'])
-    return redirect(f"/attorney/details/{attorney_id}")
+    if request.method == "POST":
+        attorney = Attorney.objects.get(id = attorney_id)
+
+        # get the form data and apply it to the instance and then assign it as a form object
+        form = AttorneyDetailForm(request.POST, instance=attorney)
+
+        # now use the built in form validation to verify our data passed in with the POST
+        if form.is_valid():
+            print("form is valid - updating attorney")
+            
+            # save this in the database and assign the returned instance of the manager object to a variable
+            instance = form.save()
+            return redirect(f"/attorney/details/{instance.id}")
+        else:
+            # form wasn't valid, let them try again
+            print("Form is invalid - Try again!")
+            # send the form back to show the errors as well as repopulate with the data they entered
+            return render(request, f"/attorney/details/{attorney_id}", {"form": form})
+
+    # Since this is not a post request, redirect them to the attorney list
+    return redirect("/attorney/")

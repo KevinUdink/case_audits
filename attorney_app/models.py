@@ -8,7 +8,9 @@ class Attorney(models.Model):
     is_active = models.BooleanField(default=True)
     manager = models.ForeignKey(Manager, on_delete=models.CASCADE, related_name="attorneys")
     # need to still add the foreign key for default audit type
-    # default_audit_type = models.ForeignKey(AuditType, on_delete=models.CASCADE, related_name="attorneys")
+    # audit_type = models.ForeignKey(AuditType, on_delete=models.CASCADE, related_name="attorneys")
+    created_at = models.DateTimeField(auto_now_add=True)
+    modified_at = models.DateTimeField(auto_now=True)
 
     # this is used for the console and debugging purposes in the "shell"
     def __repr__(self):

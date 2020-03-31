@@ -82,9 +82,12 @@ def details(request, manager_id):
     # Get the manager that matches this id
     manager = Manager.objects.get(id=manager_id)
     form = ManagerDetailsForm(instance=manager)
+    attorneys = manager.attorneys.all()
     # print(f"form fields: {form.fields}")
     context = {
         "manager": manager,
         "form": form,
+        "attorneys": attorneys,
     }
+    print(f"\tmanager attorneys: {attorneys}")
     return render(request, "manager_details.html", context)
