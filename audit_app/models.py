@@ -3,6 +3,8 @@ from django.db import models
 # Create your models here.
 class AuditType(models.Model):
     name = models.CharField(max_length=50)
+    # allow the desc to be blank
+    desc = models.TextField(blank=True)
     is_current = models.BooleanField(default=True)
     # attorneys is a list of Attorney - from the foreign key in the Attorney class
     # audit_criteria is a list of criteria - from the foreign key in AuditCriteria class

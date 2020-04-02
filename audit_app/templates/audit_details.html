@@ -29,57 +29,58 @@
       {% endif %}
       <div class="col-sm-12 col-lg-10">
         {% if is_add_audit %}
-        <form method="POST" action="/audit/create/" class="w-60">
+        <form method="POST" action="/audit/create/" class="w-80">
         {% else %}
-        <form method="POST" action="/audit/update/{{audit.id}}" class="w-60">
+        <form method="POST" action="/audit/update/{{audit.id}}" class="w-80">
         {% endif %}
           {% csrf_token %}
-          <div class="form-group row">
-            <label for="first_name" class="col-sm-3 col-form-label text-sm-right">First Name</label>
-            <div class="col-sm-8">
-              <input type="text" id="first_name" name="first_name" class="form-control" value="{{audit.first_name}}" />
+          {% for field in atForm %}
+          <div class="form-group row form-inline">
+            {{ field.errors }}
+            <label class="col-sm-3 justify-content-sm-end">{{ field.label }}</label>
+            {{ field }}
+          </div>
+          {% endfor %}
+
+          {{ acFormset.management_form }}
+          {% for form in acFormset %}
+          <hr />
+          <div class="row form-row my-2">
+            <div class="col">
+              <div class="row my-2">
+                <div class="col-3 text-right">
+                  <label>{{ form.question.label }}</label>
+                </div>
+                <div class="col">
+                  <div class="input-group">
+                    {{ form.question }}
+                  </div>
+                </div>
+              </div>
+              <div class="row my-2">
+                <div class="col-3 text-right">
+                  <label>{{ form.max_points.label }}</label>
+                </div>
+                <div class="col-1">
+                  <div class="input-group">
+                    {{ form.max_points }}
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="input-group-append">
+              {% if is_add_audit or is_update_audit %}
+              <button class="btn btn-success add-form-row">+</button>
+              {% endif %}
             </div>
           </div>
-          <div class="form-group row">
-            <label for="last_name" class="col-sm-3 col-form-label text-sm-right">Last Name</label>
-            <div class="col-sm-8">
-              <input type="text" id="last_name" name="last_name" class="form-control" value="{{audit.last_name}}" />
-            </div>
-          </div>
-          <div class="form-group row">
-            <label for="title" class="col-sm-3 col-form-label text-sm-right">Title</label>
-            <div class="col-sm-8">
-              <input type="text" id="title" name="title" class="form-control" value="{{audit.title}}" />
-            </div>
-          </div>
-          <div class="form-group row">
-            <label for="password" class="col-sm-3 col-form-label text-sm-right">Password</label>
-            <div class="col-sm-8">
-              <input type="password" id="password" name="password" class="form-control" />
-            </div>
-          </div>
-          <div class="form-group row">
-            <label for="confirm_pw" class="col-sm-3 col-form-label text-sm-right">Confirm Password</label>
-            <div class="col-sm-8">
-              <input type="password" id="confirm_pw" name="confirm_pw" class="form-control" />
-            </div>
-          </div>
-          <div class="form-group row">
-            <div class="col-sm-3"></div>
-            <div class="col-sm-1">
-              <!-- This looks funny when we get to extra small device sizes - need to work on this again later -->
-              <input type="checkbox" id="isActive" name="isActive" value="isActive"
-                {% if audit.active %} checked {% endif %} />
-            </div>
-            <div class="col-sm-3">
-              <label for="isActive" class="col col-form-label text-left">Active</label>
-            </div>
-          </div>
-          <div class="form-group">
+          {% endfor %}
+
+          <div class="form-group text-center">
             {% if is_add_audit %}
-              <button type="submit" class="btn btn-success float-right">Add</button>
-            {% else %}
-              <button type="submit" class="btn btn-success float-right">Update</button>
+              <button type="submit" class="btn btn-success">Create Audit</button>
+            {% elif is_update_audit %}
+              <button type="submit" class="btn btn-success">Update Audit</button>
             {% endif %}
           </div>
         </form>
@@ -87,5 +88,101 @@
     </div>
   </div>
 
-
 {% endblock %}
+
+{% block javascript %}
+  <script type="text/javascript">
+    function updateElementIndex(element, prefix, index) {
+      var id_regex = new RegExp('(' + prefix + '-\\d+)');
+      var replacement = prefix + '-' + index;
+
+      // Each element will have an ID and name with a number the corresponds with which form element it is
+      //    We need to keep them unique by replacing the index / number as needed when we add and remove elements
+      if ($(element).attr("for")) $(element).attr("for", $(element).attr("for").replace(id_regex, replacement));
+      if (element.id) element.id = element.id.replace(id_regex, replacement);
+      if (element.name) element.name = element.name.replace(id_regex, replacement);
+    }
+
+    function cloneMore(selector, prefix) {
+      var newElement = $(selector).clone(true);
+      // form set elements are prepended with 'id_' and so we need to do the same here
+      var total = $('#id_' + prefix + '-TOTAL_FORMS').val();
+
+      // find the elements we want, but skip over the following types in the form
+      newElement.find(':input:not([type=button]):not([type=submit]):not([type=reset])').each(function() {
+        var name = $(this).attr('name')
+
+        if(name) {
+          name = name.replace('-' + (total-1) + '-', '-' + total + '-');
+          // form set elements are prepended with 'id_' and so we need to do the same here
+          var id = 'id_' + name;
+          $(this).attr({'name': name, 'id': id}).val('').removeAttr('checked');
+        }
+      });
+
+      // Now we need to update the labels
+      newElement.find('label').each(function() {
+        var forValue = $(this).attr('for');
+        if (forValue) {
+          forValue = forValue.replace('-' + (total-1) + '-', '-' + total + '-');
+          $(this).attr({'for': forValue});
+        }
+      });
+
+      // increment the overall counter to ensure we know how many forms are in the formset
+      total++;
+      $('#id_' + prefix + '-TOTAL_FORMS').val(total);
+
+      // placement of the new form goes after the last form created
+      $(selector).after(newElement);
+
+      var conditionRow = $('.form-row:not(:last)');
+
+      // change the newly "filled in" form to allow removal instead of add
+      conditionRow.find('.btn.add-form-row')
+      .removeClass('btn-success').addClass('btn-danger')
+      .removeClass('add-form-row').addClass('remove-form-row')
+      .html('-');
+
+      // do not refresh the page
+      return false;
+    }
+
+    // If we want to remove criteria from this formset, we need to adjust values like
+    //    element IDs, names and labels and reduce the total accordingly
+    function deleteForm(prefix, btn) {
+      var total = parseInt($('#id_' + prefix + '-TOTAL_FORMS').val());
+
+      // as long as we have 1 form, go through the following
+      if (total > 1){
+        //
+        btn.closest('.form-row').remove();
+
+        var forms = $('.form-row');
+
+        $('#id_' + prefix + '-TOTAL_FORMS').val(forms.length);
+        for (var i=0, formCount=forms.length; i<formCount; i++) {
+          $(forms.get(i)).find(':input').each(function() {
+            updateElementIndex(this, prefix, i);
+          });
+        }
+      }
+      return false;
+    }
+
+    // When the button is clicked to add (on the form with a class of add-form-row) we will 
+    //    call the function to create a new and "save" the new info input as part of the formset
+    $(document).on('click', '.add-form-row', function(e){
+      e.preventDefault();
+      cloneMore('.form-row:last', 'form');
+      return false;
+    });
+
+    // If someone wants to remove criteria, this will "remove" the form from the formset
+    $(document).on('click', '.remove-form-row', function(e){
+      e.preventDefault();
+      deleteForm('form', $(this));
+      return false;
+    });
+  </script>
+{% endblock %} 
