@@ -7,4 +7,5 @@ urlpatterns = [
     path('add/', views.add), 
     path('create/', views.create), 
     path('update/<int:attorney_id>', views.update), 
+    path('post/ajax/attorney', views.post_attorney, name="post_attorney"),
 ]

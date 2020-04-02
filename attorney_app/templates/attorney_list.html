@@ -7,18 +7,35 @@
 {% block content %}
   <div class="row mb-3">
     <div class="col">
-      <h2>Attorney List</h2>
+      <h2>Attorneys</h2>
     </div>
-    <div class="col-sm-3">
+    <!-- <div class="col-sm-3">
       <button class="btn btn-primary mx-3" onclick="window.location.href='/attorney/add';">Add Attorney</button>
-    </div>
+    </div> -->
   </div>
+
+  <div class="container-fluid">
+    <form id="attorney-form">
+      <div class="row">
+        {% csrf_token %}
+        {% for field in form %}
+        <div class="form-group col-4">
+          <label class="col-12">{{ field.label }}</label>
+          {{ field }}
+        </div>
+        {% endfor %}
+      </div>
+      <div class="row justify-content-center">
+        <input type="submit" class="btn btn-primary" value="Create Attorney" />
+      </div>
+    <form>
+  </div>
+  <hr />
 
   <div class="row my-4">
     <div class="col">
-      <h4>Attorneys</h4>
       <div class="container-fluid">
-        <table class="table table-striped table-sm" id="my_managers">
+        <table class="table table-striped table-sm" id="attorneys-table">
           <thead>
             <tr>
               <th>Attorney Name</th>
@@ -43,3 +60,59 @@
     </div>
   </div>
 {% endblock %}
+
+
+{% block javascript %}
+<script>
+  // On submiting the form, send the POST (ajax) request to the server 
+  // after successfull submission, display the object
+  $("#attorney-form").submit(function (e) {
+    // preventing page reload and all other default actions
+    e.preventDefault();
+
+    // serialize the data for sending the form data to the server
+    var serializedData = $(this).serialize();
+
+    // make the POST ajax call - explicitly sending a POST request to the "named" URL
+    $.ajax({
+      type: 'POST',
+      url: "{% url 'post_attorney' %}",
+      data: serializedData,
+      success: function (response) {
+        // after successfully the creating object, we need to do multiple things
+        // 1. clear the form of the previously submitted data
+        $("#attorney-form").trigger('reset');
+        
+        // 2. set the focus to first name input 
+        $("#id_first_name").focus();
+
+        // display the new manager in the table
+        var instance = JSON.parse(response["instance"]);
+
+        // use the first instance returned (it should only be one anyways)
+        var fields = instance[0]["fields"];
+        var id = instance[0]["pk"]
+
+        // add this manager to the top of the list of managers
+        //    These are written so that if the value is empty, we add an empty string to the TD
+        $("#attorneys-table tbody").prepend(
+          `<tr>
+          <td><a href="/attorney/details/${id}">${fields["first_name"]||""} ${fields["last_name"]||""}</a></td>
+          <td>
+            <a href="/attorney/summary/{{attorney.id}}">Summary</a> |
+            <a href="/attorney/audits/{{attorney.id}}">Audits</a>
+          </td>
+          <td>${fields["is_active"]||""}</td>
+          </tr>`
+        )},
+        // <td>{{attorney.created_at | date:"Y-m-d"}}</td>
+
+      error: function (response) {
+        // alert the error if any occured
+        alert(response["responseJSON"]["error"]);
+      }
+    })
+  })
+</script>
+
+{% endblock javascript %}

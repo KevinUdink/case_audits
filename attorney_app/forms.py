@@ -1,5 +1,6 @@
 from .models import Attorney
 from manager_app.models import Manager
+from audit_app.models import AuditType
 from django import forms
 # import datetime
 
@@ -8,6 +9,7 @@ class AttorneyForm(forms.ModelForm):
     #   I am choosing "None" to prevent us from selecting an invalid manager
     manager= forms.ModelChoiceField(queryset=Manager.objects.all(), empty_label=None)
     # Get the list of default audit types
+    # audit_types = forms.ModelChoiceField(queryset=AuditType.objects.all(), empty_label=None)
     # audit_types = [
     #     { "id": "1", "name": "PTC" },
     #     { "id": "2", "name": "DV" },
@@ -36,6 +38,7 @@ class AttorneyDetailForm(forms.ModelForm):
     #   I am choosing "None" to prevent us from selecting an invalid manager
     manager = forms.ModelChoiceField(queryset=Manager.objects.all(), empty_label=None)
     # Get the list of default audit types
+    # audit_types = forms.ModelChoiceField(queryset=AuditType.objects.all(), empty_label=None)
     # audit_types = [
     #     { "id": "1", "name": "PTC" },
     #     { "id": "2", "name": "DV" },
@@ -47,9 +50,15 @@ class AttorneyDetailForm(forms.ModelForm):
 
         # adding a form control class to each form input to enable bootstrap
         for name in self.fields.keys():
-            self.fields[name].widget.attrs.update({
-                'class': 'form-control',
-            })
+            if name == "is_active":
+                self.fields[name].widget.attrs.update({
+                    "class": "col-sm-1",
+                    "style": "width:20px;height:20px",
+                })
+            else:
+                self.fields[name].widget.attrs.update({
+                    "class": "form-control col-sm-8",
+                })
 
     class Meta:
         model = Attorney 
